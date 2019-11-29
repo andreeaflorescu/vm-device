@@ -5,6 +5,7 @@
 
 extern crate vm_memory;
 
+use std::io;
 use vm_memory::GuestAddress;
 
 pub mod resources;
@@ -30,4 +31,14 @@ pub trait DeviceIo: Send {
 
     /// Write `data` to the guest physical address `addr`.
     fn write(&mut self, addr: IoAddress, data: &[u8]);
+}
+
+/// Trait that needs to be implemented by all rust-vmm devices which
+/// require an interrupt.
+///
+/// This trait can be extended for non-legacy interrupts as well.
+/// In case of MSI-X, we can have the table configuration hold a vector
+/// of <dyn Interrupt>.
+pub trait Interrupt {
+    fn trigger(&self) -> io::Error;
 }
